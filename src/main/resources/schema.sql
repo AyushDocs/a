@@ -1,0 +1,5 @@
+DROP TABLE IF EXISTS User;  
+CREATE TABLE User(  
+email VARCHAR(50) PRIMARY KEY,  
+username VARCHAR(50) NOT NULL
+);  
