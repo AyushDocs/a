@@ -1,4 +1,4 @@
-package com.alokMeds.api.Publications;
+package com.alokMeds.api.Query;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -11,13 +11,18 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "publ_tbl")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Publications {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    
+@Table(name="table_query")
+public class Query{
+	@Id
+	@GeneratedValue(strategy=GenerationType.AUTO)
+	private Long id;
+	private String email;
+	private String query;
+	public Query(String query,String email) {
+		this.query = query;
+		this.email = email;
+	}
 }

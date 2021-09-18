@@ -9,5 +9,4 @@ public class AlokMedsApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(AlokMedsApplication.class, args);
 	}
-     
 }
