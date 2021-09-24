@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-@CrossOrigin
+@CrossOrigin("*")
 @RestController
 @RequestMapping("/api/publications")
 public class PublicationsController {
@@ -16,4 +16,5 @@ public class PublicationsController {
     public ListOfPublications getPublications(@RequestParam("offset") int offset,@RequestParam("size") int size){
         return ListOfPublications.from(publicationRepository.findPublicationsWithPagination(offset,size));
     }
+    
 }

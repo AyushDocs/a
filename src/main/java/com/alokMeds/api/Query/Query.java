@@ -1,27 +1,30 @@
 package com.alokMeds.api.Query;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import java.time.LocalDate;
+import java.util.UUID;
 
-import lombok.AllArgsConstructor;
+import com.mongodb.lang.NonNull;
+
+import org.springframework.data.annotation.Id;
+
 import lombok.Data;
-import lombok.NoArgsConstructor;
-
-@Entity
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Table(name="table_query")
 public class Query{
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
-	private Long id;
+	private String id;
 	private String email;
 	private String query;
-	public Query(String query,String email) {
+	private LocalDate date;
+	private boolean doubtSolved;
+	
+	public Query() {
+		this.date =LocalDate.now();
+		this.id=UUID.randomUUID().toString().substring(0, 18);
+		doubtSolved=false;
+	}
+	
+	public Query(@NonNull String query,@NonNull String email) {
+		this();
 		this.query = query;
 		this.email = email;
 	}
