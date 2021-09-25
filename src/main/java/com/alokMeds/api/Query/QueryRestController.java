@@ -44,6 +44,11 @@ public class QueryRestController{
     public void delete(@PathVariable String id){
         queryRepository.deleteById(id);
     }
+    @DeleteMapping("/")
+    @CrossOrigin(value="*",allowedHeaders = "*")
+    public void deleteAll(){
+        queryRepository.deleteAll();
+    }
     @GetMapping("/id/{id}")
     public Query findById(@PathVariable String id){
       return  queryRepository.findById(id).orElseThrow(RuntimeException::new);

@@ -11,5 +11,7 @@ import lombok.NoArgsConstructor;
 public class Publications {
     @Id
     private Long id;
-    
+    private static final String AUTHOR="Alok Dubey";
+    private String author=AUTHOR;
+    private String link;    
 }
