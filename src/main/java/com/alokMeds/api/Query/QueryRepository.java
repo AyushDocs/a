@@ -18,6 +18,6 @@ public interface QueryRepository extends MongoRepository<Query,String> {
                                size.orElse(10),
                                Sort.Direction.DESC,
                                sortBy.orElse("id")));
-    }
-    
+}
+
 }
