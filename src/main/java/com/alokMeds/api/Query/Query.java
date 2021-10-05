@@ -6,11 +6,15 @@ import java.util.UUID;
 import com.mongodb.lang.NonNull;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import lombok.Data;
 @Data
+@Document
 public class Query{
 	@Id
+	@Indexed(unique=true)
 	private String id;
 	private String email;
 	private String query;

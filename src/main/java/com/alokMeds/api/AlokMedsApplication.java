@@ -14,10 +14,9 @@ public class AlokMedsApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(AlokMedsApplication.class, args);
 	}
-	@Autowired
-    private UserRepository userRepository;
+	@Autowired private UserRepository userRepository;
 	@PostConstruct
-	public void init(){
-        userRepository.save(new User("a@g.com", "123"));
+	public void add(){
+     userRepository.save(new User("a@g.com","123"));
 	}
 }
