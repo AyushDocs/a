@@ -1,0 +1,15 @@
+img{
+    display: block;
+}
+.body{
+    min-height: 130vh;
+    width:100vw;
+}
+img{
+    height:500px;
+    width:200px
+}
+.spinner{
+   height: 100px;
+   width: 100px;
+}
