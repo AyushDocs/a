@@ -28,7 +28,7 @@ public class PublicationsController {
   @GetMapping("/")
   public Page<Publications> findAllWithPagination(Optional<Integer> page, Optional<Integer> offset,
       Optional<String> sort) {
-    return repository.findAll(PageRequest.of(page.orElse(1), offset.orElse(1), Sort.Direction.DESC, sort.orElse("id")));
+    return repository.findAll(PageRequest.of(page.orElse(1), offset.orElse(1), Sort.Direction.DESC, sort.orElse("name")));
   }
 
   @PostMapping("/")

@@ -16,9 +16,10 @@ public class AlokMedsApplication {
 		SpringApplication.run(AlokMedsApplication.class, args);
 	}
 	@Autowired private UserRepository userRepository;
+        @Value("${db.admin.password}") String password;
+        @Value("${db.admin.email}") String email;
 	@PostConstruct
-	public void add(@Value("${db.admin.email}") String email,
-	@Value("${db.admin.password}") String password){
+	public void add(){
      userRepository.save(new User(email,password));
 	}
 }
