@@ -21,15 +21,16 @@ import lombok.AllArgsConstructor;
 @RequestMapping("/api/publications")
 @RestController
 @AllArgsConstructor
-@CrossOrigin(origins={"*","http://localhost:3000"}, allowedHeaders = "*")
+@CrossOrigin(origins="http://localhost:3000", allowedHeaders = "*")
 public class PublicationsController {
-  private PublicationRepository repository;
+  private PublicationRepo repository;
   private JwtUtil jwtUtil;
   @GetMapping("/")
   public Page<Publications> findAllWithPagination(Optional<Integer> page, Optional<Integer> offset,
       Optional<String> sort) {
-    return repository.findAll(PageRequest.of(page.orElse(1), offset.orElse(1), Sort.Direction.DESC, sort.orElse("id")));
+    return repository.findAll(PageRequest.of(offset.orElse(0), page.orElse(1), Sort.Direction.DESC, sort.orElse("id")));
   }
+
   @PostMapping("/")
   public ResponseEntity<Void> add(@RequestHeader("Authorization") String jwtToken,
   @RequestHeader("email") String email,@RequestBody Publications publication){
