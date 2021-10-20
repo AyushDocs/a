@@ -1,0 +1,2 @@
+headers()
+    .contentSecurityPolicy("script-src 'self'");
