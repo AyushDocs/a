@@ -1,7 +1,10 @@
 package com.alokMeds.api.Publications;
 
-import org.springframework.data.repository.PagingAndSortingRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-public interface PublicationRepo extends PagingAndSortingRepository<Publications,Long> {
-
+@Repository
+public interface PublicationRepo extends JpaRepository<Publications,Long> {
+    
 }
+

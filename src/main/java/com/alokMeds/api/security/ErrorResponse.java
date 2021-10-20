@@ -9,4 +9,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ErrorResponse implements Response {
     private boolean hasError;
+    private String message;
 }

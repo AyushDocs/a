@@ -20,15 +20,15 @@ import lombok.AllArgsConstructor;
 
 @RequestMapping("/api/publications")
 @RestController
+@CrossOrigin(origins={"http://localhost:3000", "http://localhost:8080","https://alokmeds.herokuapp.com/"},allowedHeaders = "*")
 @AllArgsConstructor
-@CrossOrigin(origins="http://localhost:3000", allowedHeaders = "*")
 public class PublicationsController {
   private PublicationRepo repository;
   private JwtUtil jwtUtil;
   @GetMapping("/")
   public Page<Publications> findAllWithPagination(Optional<Integer> page, Optional<Integer> offset,
       Optional<String> sort) {
-    return repository.findAll(PageRequest.of(offset.orElse(0), page.orElse(1), Sort.Direction.DESC, sort.orElse("id")));
+    return repository.findAll(PageRequest.of(offset.orElse(0), page.orElse(1), Sort.Direction.ASC, sort.orElse("id")));
   }
 
   @PostMapping("/")
