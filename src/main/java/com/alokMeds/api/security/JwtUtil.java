@@ -54,13 +54,12 @@ public class JwtUtil {
                 .signWith(SignatureAlgorithm.HS256, SECRET_KEY).compact();
     }
 
-    public boolean validateToken(String token, String email) {
+    public boolean validateToken(String token) {
         try{
-           return userRepository.findByEmail(email).isPresent() &&!isTokenExpired(token);
+           return !isTokenExpired(token);
         }
         catch(JwtException e){
         return false;
         }
-        
     }
 }

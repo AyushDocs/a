@@ -1,0 +1,20 @@
+import React from 'react';
+import ReactDOM from 'react-dom';
+import { Provider } from 'react-redux';
+import { BrowserRouter } from 'react-router-dom';
+import App from './App';
+import store from './store';
+ReactDOM.render(  
+  <React.StrictMode>
+   
+      <BrowserRouter>
+      <Provider store={store}>
+        <App /> 
+      </Provider>
+      </BrowserRouter>
+   
+  </React.StrictMode>
+ ,
+  document.getElementById('root')
+);
+//append to build for deploy with spring boot===== && xcopy .\\build\\* ..\\main\\resources\\public /s /y

@@ -11,11 +11,15 @@ import lombok.NoArgsConstructor;
 @Entity
 @NoArgsConstructor
 @Table(name = "usr_tbl")
-public class User {
+public class User{
     @Id
     @Column(unique = true)
     private String email;
+    @Column(unique = true)
+    private String username;
     private String password;
+    private String roles;
+
     public User(String email,String password){
     this.email = email;
     this.password = password;
