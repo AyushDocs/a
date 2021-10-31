@@ -1,13 +1,12 @@
 package com.alokMeds.api.security;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
-public class ErrorResponse implements Response {
-    private boolean hasError;
+public class ErrorResponse{
+    private boolean hasError=true;
     private String message;
+    public ErrorResponse(String message) {
+    this.message = message;
+    }
 }

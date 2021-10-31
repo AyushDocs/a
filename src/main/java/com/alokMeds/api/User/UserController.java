@@ -1,24 +1,21 @@
 package com.alokMeds.api.User;
 
-import java.security.NoSuchAlgorithmException;
-import java.util.HashMap;
+import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 
-import com.alokMeds.api.security.Response;
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.AllArgsConstructor;
 
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/api/auth/users")
 
 @CrossOrigin(origins={"http://localhost:3000", "http://localhost:8080","https://alokmeds.herokuapp.com/"},allowedHeaders = "*")
 @AllArgsConstructor
@@ -26,17 +23,17 @@ public class UserController {
     private UserService userService;
     private UserRepository userRepository;
 
-    @PostMapping("/login")
-    public ResponseEntity<Response> login(@RequestBody List<UserRecieved> user,
-    @RequestHeader("Authorization") String jwt) throws NoSuchAlgorithmException {
-        return userService.login(jwt,user.get(0).getEmail(), user.get(0).getPassword());
+    @PostMapping("/admin/login")
+    public ResponseEntity<?> adminLogin(@RequestBody List<UserRecieved> user,HttpServletResponse response){
+        return userService.adminLogin(user.get(0).getEmail(), user.get(0).getPassword(),response);
     }
-
-    @PostMapping("/exists")
-    public Map<String, Object> exists(@RequestHeader("Authorization") String jwtToken){
-        Map<String,Object> map=new HashMap<>();
-        map.put("exists",userService.exists(jwtToken));
-        return map;
+    @PostMapping("/signup")
+    public void signup(@RequestBody UserRecieved user,HttpServletResponse response){
+         userService.signup(user,response);
+    }
+    @PostMapping("/login")
+    public void login(@RequestBody UserRecieved user,HttpServletResponse response) throws IOException{
+         userService.login(user,response);
     }
 
     @PostMapping("/")

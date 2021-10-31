@@ -13,12 +13,8 @@ export default function ProtectedRoute({component:Component,...rest}) {
     },[checkForAuth])
     return (
         <Route {...rest} render={props=>{
-            if(IsAuthenticated){
-                console.log('authenticated');
-                return <Component {...props} />
-            }       
+            if(IsAuthenticated)return <Component {...props} />
             else{
-                console.log('not authenticated');
                 toggleLogin()
                 return <Authentication/>
             }

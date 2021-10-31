@@ -2,17 +2,21 @@
 img {
   display: inline-block;
 }
-.goog-font,h5 {
+.goog-font,
+h5 {
   font-family: "IM Fell English SC", serif;
+}
+button{
+  all:initial
 }
 h3 {
   margin: auto;
 }
-.body{
+.body {
   min-height: 100vh;
 }
 body {
-    overflow-x: hidden;
+  overflow-x: hidden;
 }
 .my-row {
   margin-top: 10px;
@@ -31,16 +35,11 @@ body {
 .no-border {
   border: 0 solid #ffffff;
 }
-textarea{
+textarea {
   overflow-y: auto;
 }
 .d-flex {
   justify-content: center;
-}
-.form-container {
-  border: 2px solid black;
-  border-radius: 15px;
-  height: 70%;
 }
 .blog-item {
   border-radius: 15px;
@@ -51,7 +50,7 @@ textarea{
   height: 100px;
   width: 100px;
 }
-.cursor:hover{
+.cursor:hover {
   cursor: pointer;
 }
 .grey-bg-hover:hover {

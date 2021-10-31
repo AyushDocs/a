@@ -7,4 +7,5 @@ import lombok.Data;
 public class UserRecieved {
     private String email;
     private String password;
+    private String username;
 }

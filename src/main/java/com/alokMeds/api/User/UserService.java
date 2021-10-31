@@ -2,22 +2,19 @@ package com.alokMeds.api.User;
 
 import static com.alokMeds.api.AlokMedsApplication.hash;
 
-import java.security.NoSuchAlgorithmException;
-import java.util.Date;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
-import com.alokMeds.api.security.AuthenticationResponse;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
+
 import com.alokMeds.api.security.ErrorResponse;
 import com.alokMeds.api.security.JwtUtil;
-import com.alokMeds.api.security.Response;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.MalformedJwtException;
 import lombok.AllArgsConstructor;
 
 @Service
@@ -26,43 +23,45 @@ public class UserService {
   private JwtUtil jwtUtil;
   private UserRepository userRepository;
 
-  public ResponseEntity<Response> login(String jwt, String email, String password) throws NoSuchAlgorithmException {
+  public ResponseEntity<?> adminLogin(String email, String password, HttpServletResponse response) {
+    User u = userRepository.findByEmail(email);
+    if (u == null || !u.getPassword().equals(hash(password)))
+      return ResponseEntity.status(403).body(new ErrorResponse("Enter valid Credentials"));
 
-    if (!exists(email, hash(password))) {
-      return ResponseEntity.of(Optional.of(new ErrorResponse(true, "wrong credentials")));
-    }
-    try {
-      if (jwt.equals("") || jwtUtil.extractExpiration(jwt).after(new Date())) {
-        return ResponseEntity.ok(jwtWithAdminAcess(email));
-      }
-    } catch (MalformedJwtException j) {
-      return ResponseEntity.of(Optional.of(new ErrorResponse(true, "no jwt")));
-    }
-    catch (ExpiredJwtException j) {
-      return ResponseEntity.of(Optional.of(jwtWithAdminAcess(email)));
-    }
-     return ResponseEntity.badRequest().build();
+    // normal case
+    addCookieInResponse(response, u);
+    return ResponseEntity.ok().build();
   }
 
-  private Response jwtWithAdminAcess(String email) {
+  private String jwtWithUuid(String uuid) {
     Map<String, Object> claims = new HashMap<>();
-    claims.put("Allow-Admin-Acess", true);
-    claims.put("email", email);
-    String jwtString = jwtUtil.generateToken(claims);
-    Date timeOfExpiration = jwtUtil.extractExpiration(jwtString);
-    return new AuthenticationResponse(jwtString, timeOfExpiration);
+    claims.put("id", uuid);
+    return jwtUtil.generateToken(claims);
   }
 
-  public boolean exists(String jwt) {
-    try {
-      if (jwtUtil.isTokenExpired(jwt)) return false;
-      return jwtUtil.hasAdminClaim(jwt);
-    } catch (Exception e) {
-      return false;
+  public void signup(UserRecieved userRecieved, HttpServletResponse response) {
+     User user=new User();
+     user.setEmail(userRecieved.getEmail());
+     user.setPassword(userRecieved.getPassword());
+     user.setUsername(userRecieved.getUsername());
+     User saved=userRepository.save(user);
+     addCookieInResponse(response, saved);
+  }
+
+  public void login(UserRecieved userRecieved, HttpServletResponse response) throws IOException {
+     User user=userRepository.findByEmail(userRecieved.getEmail());
+     boolean passwordEqual=user.getPassword().equals(hash(userRecieved.getPassword()));
+     boolean nameEqual=user.getUsername().equals(userRecieved.getUsername());
+    if(nameEqual || passwordEqual) {
+      addCookieInResponse(response, user);
+      return;
     }
+    response.sendError(403);
   }
-
-  private boolean exists(String email, String password) {
-    return userRepository.existsByEmailAndPassword(email, password);
+  private void addCookieInResponse(HttpServletResponse response,User user){
+    Cookie cookie = new Cookie("token", jwtWithUuid(user.getUuid()));
+    cookie.setHttpOnly(true);
+    cookie.setMaxAge(15 * 60 * 60);
+    response.addCookie(cookie);
   }
 }
