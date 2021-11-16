@@ -22,11 +22,14 @@ public class Publications {
     private String name;
     private String author;
     private String link;
-    
-    public Publications(String name, String author, String link) {
+    private String description;
+    private String imgUrl;
+    public Publications(String name,String link,String author,String imgUrl,String description) {
         this.name = name;
         this.author = author;
         this.link = link;
+        this.imgUrl = imgUrl;
+        this.description = description;
     }     
     
 }

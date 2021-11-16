@@ -2,16 +2,14 @@ package com.alokMeds.api.User;
 
 import static com.alokMeds.api.AlokMedsApplication.hash;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletResponse;
-
-import com.alokMeds.api.security.ErrorResponse;
+import com.alokMeds.api.security.AuthenticationResponse;
 import com.alokMeds.api.security.JwtUtil;
 
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -22,15 +20,49 @@ import lombok.AllArgsConstructor;
 public class UserService {
   private JwtUtil jwtUtil;
   private UserRepository userRepository;
+  private static final String COOKIE_NAME="token";
 
-  public ResponseEntity<?> adminLogin(String email, String password, HttpServletResponse response) {
-    User u = userRepository.findByEmail(email);
-    if (u == null || !u.getPassword().equals(hash(password)))
-      return ResponseEntity.status(403).body(new ErrorResponse("Enter valid Credentials"));
+  public ResponseEntity<AuthenticationResponse> adminLogin(String email, String password) {
+    AuthenticationResponse authResponse = new AuthenticationResponse();
+    User user = userRepository.findByEmail(email);
+    if (user == null || !user.getPassword().equals(hash(password)))
+     return ResponseEntity.ok(authResponse.setAll("Enter valid Credentials",false));
+     authResponse.setSuccess(true);
+     return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE,addCookieInResponse(user)).body(authResponse);
+  }
 
-    // normal case
-    addCookieInResponse(response, u);
-    return ResponseEntity.ok().build();
+  public ResponseEntity<AuthenticationResponse> signup(UserRecieved userRecieved) {
+    AuthenticationResponse authResponse = new AuthenticationResponse();
+    User maybeSavedUser = userRepository.findByEmail(userRecieved.getEmail());
+    if (maybeSavedUser != null)
+     return ResponseEntity.ok(authResponse.setAll("user with similar credentials exists", false));
+    User user = new User();
+    user.setEmail(userRecieved.getEmail());
+    user.setPassword(hash(userRecieved.getPassword()));
+    userRepository.save(user);
+    return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE,addCookieInResponse(user)).body(authResponse.setAll(null, true));
+  }
+
+  public ResponseEntity<AuthenticationResponse> login(UserRecieved userRecieved){
+    AuthenticationResponse authResponse = new AuthenticationResponse();
+    User user = userRepository.findByEmail(userRecieved.getEmail());
+    if (user == null) {
+      System.out.println(user);
+      return ResponseEntity.ok(authResponse.setAll("Please enter correct credentials", false));
+}
+    boolean passwordEqual = user.getPassword().equals(hash(userRecieved.getPassword()));
+    boolean emailEqual = user.getEmail().equals(userRecieved.getEmail());
+    if (passwordEqual && emailEqual) 
+       return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE,addCookieInResponse(user)).body(authResponse.setAll("Successfully logged in user", true));
+    return ResponseEntity.ok(authResponse.setAll("Please enter correct credentials", false));
+  }
+
+  public ResponseEntity<AuthenticationResponse> logout(String token) {
+    AuthenticationResponse authResponse = new AuthenticationResponse();
+    if (!jwtUtil.validateToken(token))
+      return ResponseEntity.ok().body(authResponse.setAll("Please send token with corren credentials", false));
+
+      return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE,removeCookieFromResponse()).body(authResponse.setAll(null, true));
   }
 
   private String jwtWithUuid(String uuid) {
@@ -39,29 +71,12 @@ public class UserService {
     return jwtUtil.generateToken(claims);
   }
 
-  public void signup(UserRecieved userRecieved, HttpServletResponse response) {
-     User user=new User();
-     user.setEmail(userRecieved.getEmail());
-     user.setPassword(userRecieved.getPassword());
-     user.setUsername(userRecieved.getUsername());
-     User saved=userRepository.save(user);
-     addCookieInResponse(response, saved);
+  private String addCookieInResponse(User user) {
+    return ResponseCookie.from(COOKIE_NAME,jwtWithUuid(user.getUuid())).maxAge(1000*60*15l)
+   .path("/").httpOnly(true).secure(true).build().toString();
   }
-
-  public void login(UserRecieved userRecieved, HttpServletResponse response) throws IOException {
-     User user=userRepository.findByEmail(userRecieved.getEmail());
-     boolean passwordEqual=user.getPassword().equals(hash(userRecieved.getPassword()));
-     boolean nameEqual=user.getUsername().equals(userRecieved.getUsername());
-    if(nameEqual || passwordEqual) {
-      addCookieInResponse(response, user);
-      return;
-    }
-    response.sendError(403);
-  }
-  private void addCookieInResponse(HttpServletResponse response,User user){
-    Cookie cookie = new Cookie("token", jwtWithUuid(user.getUuid()));
-    cookie.setHttpOnly(true);
-    cookie.setMaxAge(15 * 60 * 60);
-    response.addCookie(cookie);
+  private String removeCookieFromResponse() {
+    return ResponseCookie.from(COOKIE_NAME,"")
+    .maxAge(0).path("/").httpOnly(true).secure(true).build().toString();
   }
 }

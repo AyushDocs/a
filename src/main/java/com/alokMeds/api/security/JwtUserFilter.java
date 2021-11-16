@@ -22,7 +22,7 @@ public class JwtUserFilter implements Filter {
     private JwtUtil jwtUtil;
     @Autowired
     private UserRepository userRepository;
-    private static final List<String> urlsWhichRequireUserAuthentication=Arrays.asList("","");
+    private static final List<String> urlsWhichRequireUserAuthentication=Arrays.asList("/dd","/ddd");
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)throws IOException, ServletException {
         HttpServletRequest req = (HttpServletRequest) request;

@@ -1,11 +1,11 @@
 package com.alokMeds.api.User;
 
-import java.io.IOException;
 import java.util.List;
 
-import javax.servlet.http.HttpServletResponse;
+import com.alokMeds.api.security.AuthenticationResponse;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -16,24 +16,33 @@ import lombok.AllArgsConstructor;
 
 @RestController
 @RequestMapping("/api/auth/users")
-
-@CrossOrigin(origins={"http://localhost:3000", "http://localhost:8080","https://alokmeds.herokuapp.com/"},allowedHeaders = "*")
+@CrossOrigin(origins={"http://localhost:3000", "http://localhost:8080","https://alokmeds.herokuapp.com/","http://127.0.0.1:3000/"},allowedHeaders = "*",allowCredentials ="true")
 @AllArgsConstructor
 public class UserController {
     private UserService userService;
     private UserRepository userRepository;
 
     @PostMapping("/admin/login")
-    public ResponseEntity<?> adminLogin(@RequestBody List<UserRecieved> user,HttpServletResponse response){
-        return userService.adminLogin(user.get(0).getEmail(), user.get(0).getPassword(),response);
+    @CrossOrigin(origins={"http://localhost:3000", "http://localhost:8080","https://alokmeds.herokuapp.com/"},allowedHeaders = "*")
+
+    public ResponseEntity<AuthenticationResponse> adminLogin(@RequestBody List<UserRecieved> user){
+        return userService.adminLogin(user.get(0).getEmail(), user.get(0).getPassword());
     }
     @PostMapping("/signup")
-    public void signup(@RequestBody UserRecieved user,HttpServletResponse response){
-         userService.signup(user,response);
+    @CrossOrigin(origins={"http://localhost:3000", "http://localhost:8080","https://alokmeds.herokuapp.com/"},allowedHeaders = "*")
+
+    public ResponseEntity<AuthenticationResponse> signup(@RequestBody UserRecieved user){
+       return userService.signup(user);
     }
     @PostMapping("/login")
-    public void login(@RequestBody UserRecieved user,HttpServletResponse response) throws IOException{
-         userService.login(user,response);
+    @CrossOrigin(origins={"http://localhost:3000", "http://localhost:8080","https://alokmeds.herokuapp.com/"},allowedHeaders = "*")
+    public ResponseEntity<AuthenticationResponse> login(@RequestBody UserRecieved user){   
+        return userService.login(user);
+    }
+    @PostMapping("/logout")
+    @CrossOrigin(origins={"http://localhost:3000", "http://localhost:8080","https://alokmeds.herokuapp.com/"},allowedHeaders = "*")
+    public ResponseEntity<AuthenticationResponse> logout(@CookieValue("token") String token){   
+        return userService.logout(token);
     }
 
     @PostMapping("/")

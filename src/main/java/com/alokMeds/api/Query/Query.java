@@ -1,6 +1,6 @@
 package com.alokMeds.api.Query;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 import javax.persistence.Column;
@@ -18,11 +18,12 @@ public class Query{
 	@Column(unique = true)
 	private String id;
 	private String email;
+	@Column(columnDefinition="text")
 	private String query;
-	private LocalDate date;
+	private LocalDateTime date;
 	
 	public Query() {
-		this.date =LocalDate.now();
+		this.date =LocalDateTime.now();
 		this.id=UUID.randomUUID().toString().substring(0, 18);
 	}
 	

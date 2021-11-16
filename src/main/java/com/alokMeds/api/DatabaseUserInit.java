@@ -30,7 +30,6 @@ public class DatabaseUserInit {
 		u.setEmail(email);
 		u.setPassword(hash(password));
         u.setRoles("ADMIN,USER");
-		u.setUsername("i am admin");
      userRepository.save(u);
 	}
 
