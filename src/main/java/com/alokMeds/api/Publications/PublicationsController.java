@@ -17,32 +17,32 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.AllArgsConstructor;
 
-@RequestMapping("/api/publications")
+@RequestMapping("/api")
 @RestController
-@CrossOrigin(origins={"http://localhost:3000", "http://localhost:8080","https://alokmeds.herokuapp.com/"},allowedHeaders = "*")
+@CrossOrigin(origins = { "http://localhost:3000", "http://localhost:8080","https://alokmeds.herokuapp.com/" }, allowedHeaders = "*")
 @AllArgsConstructor
 public class PublicationsController {
   private PublicationRepo repository;
-  @GetMapping("/")
+
+  @GetMapping("/publications")
   public Page<Publications> findAllWithPagination(Optional<Integer> page, Optional<Integer> offset,
-  Optional<String> sort) {
+      Optional<String> sort) {
     return repository.findAll(PageRequest.of(offset.orElse(0), page.orElse(1), Sort.Direction.ASC, sort.orElse("id")));
   }
-  
-  @CrossOrigin(origins={"http://localhost:3000", "http://localhost:8080","https://alokmeds.herokuapp.com/"},allowedHeaders = "*")
-  @PostMapping("/")//
-  public Publications add(@RequestBody Publications publication){
+
+  @PostMapping("/auth/publications")
+  public Publications add(@RequestBody Publications publication) {
     return repository.save(publication);
   }
-  @CrossOrigin(origins={"http://localhost:3000", "http://localhost:8080","https://alokmeds.herokuapp.com/"},allowedHeaders = "*")
-  @PutMapping("/")//
-  public Publications update(@RequestBody Publications publication){
+
+  @PutMapping("/auth/publications")
+  public Publications update(@RequestBody Publications publication) {
     publication.setId(repository.findIdByName(publication.getName()));
     return repository.save(publication);
   }
-  @CrossOrigin(origins={"http://localhost:3000", "http://localhost:8080","https://alokmeds.herokuapp.com/"},allowedHeaders = "*")
-  @DeleteMapping("/{name}")//
-  public void delete(@PathVariable String name){
-  repository.deleteByName(name);
+
+  @DeleteMapping("auth/publications/{name}")
+  public void delete(@PathVariable String name) {
+    repository.deleteByName(name);
   }
 }

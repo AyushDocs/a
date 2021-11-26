@@ -46,18 +46,18 @@ export default function App() {
       <Check/>
       <div className="body">
         <Routes>
-          <Route path="/" element={<Navigate to="/home"/>}/>
-          <Route path="/home" element={<Home/>} />
+          <Route path="/home/" element={<Home/>} />
           <Route path="/about" element={<About/>} />
           <Route path="/login" element={<Login/>}/>
           <Route path="/admin/publication" element={<AddPublication/>}/>
           <Route path="/publications/" element={<Publications type={PublicationType.GET}/>} />
-          <Route path="/signUp" element={<Signup/>}/> 
+          <Route path="/signUp" element={<Signup/>}/>   
           <Route path="/admin/*" element={<ProtectedRoute componentToRender={Admin}/>}/>
-          <Route path="*" element={<h1>Page Not Found</h1>} />
           <Route path="/admin/login" element={<AdminLogin/>} />
-          <Route path="/adminquery_id/:Offset" element={<ProtectedRoute componentToRender={AdminFull}/>}/>
+          <Route path="/admin/query_id/:Offset" element={<ProtectedRoute componentToRender={AdminFull}/>}/>
           <Route path="/admin/publications" element={<AdminPublications/>} />
+          <Route path="/" element={<Navigate to="/home"/>}/>
+          <Route path="*" element={<h1>Page Not Found</h1>} />          
         </Routes>
       </div>
       <Footer />

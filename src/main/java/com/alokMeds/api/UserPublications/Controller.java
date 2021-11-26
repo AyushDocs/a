@@ -11,7 +11,7 @@ import lombok.AllArgsConstructor;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping("/api/userPublications")
+@RequestMapping("/api/user/userPublications")
 public class Controller {
     @Autowired
     private UsrPublService service;

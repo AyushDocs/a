@@ -18,32 +18,33 @@ import lombok.AllArgsConstructor;
 
 @RestController
 @CrossOrigin(origins={"http://localhost:3000","http://localhost:8080","alokmeds.herokuapp.com"}, allowedHeaders = "*")
-@RequestMapping("/api/query")
+@RequestMapping("/api")
 @AllArgsConstructor
 public class QueryController {
     private QueryRepository queryRepository;
 
-    @PostMapping("/")
-    public void save(@RequestBody QueryRecieved[] queryParam) {
-        queryRepository.save(QueryRecieved.queryRecievedToQuery(queryParam[0]));
+    @PostMapping("/query")
+    public void save(@RequestBody QueryRecieved queryParam) {
+        queryRepository.save(QueryRecieved.queryRecievedToQuery(queryParam));
     }
 
-    @GetMapping("/")
+    @GetMapping("/auth/admin/query")
+    // @Secured({"ADMIN,ROOT"})
     public Page<Query> findAll(@RequestParam Optional<Integer> offset,
      @RequestParam Optional<Integer> size,@RequestParam Optional<String> sortBy) {
         return queryRepository.findWithPagination(offset, size, sortBy);          
     }
-    @GetMapping("/id/{id}")
+    @GetMapping("/auth/user/query/id/{id}")
     public ResponseEntity<Query> findById(@PathVariable String id) {
         return ResponseEntity.ok(queryRepository.findById(id).get());
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/auth/user/query/{id}")
     public void delete(@PathVariable String id) {
      queryRepository.deleteById(id);
      }
 
-    @DeleteMapping("/")
+    @DeleteMapping("/auth/admin/query")
     public void deleteAll() {
     queryRepository.deleteAll();
     }

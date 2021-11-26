@@ -1,5 +1,0 @@
-headers()
-    .contentSecurityPolicy("script-src 'self'");
-do sign up
-do login
-check filter in admin page

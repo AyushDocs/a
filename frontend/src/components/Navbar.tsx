@@ -66,18 +66,21 @@ export default function Navbar() {
             <Link className="nav-link" aria-current="page" to="/admin/">Admin Panel</Link>
             </li>
          }
-         {isAuthenticated && <li className="nav-item dropdown">
-          <span className="nav-link dropdown-toggle" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            Welcome 
-          </span>
-          <ul className="dropdown-menu" aria-labelledby="navbarDropdown">
-          
-            <li><Link className="dropdown-item" to="/">My Account</Link></li>
-            <li><Link className="dropdown-item" to="/">My queries</Link></li>
-            <li><hr className="dropdown-divider"/></li> 
-            <li><button onClick={handleLogout} className="dropdown-item">Logout</button></li>
-          </ul>
-        </li>}
+         <span className="nav-item"><button onClick={handleLogout} className="btn btn-primary">Logout</button></span>
+         {isAuthenticated &&
+           <li className="nav-item dropdown">
+             <button id="navbarDropdown" data-bs-toggle="dropdown" aria-expanded="false" className="nav-link dropdown-toggle">
+             Welcome
+             </button>
+             <ul className="dropdown-menu" aria-labelledby="navbarDropdown">
+               <li><Link to="/" className="dropdown-item">your queries</Link></li>
+               <li><Link to="/" className="dropdown-item">Change Details</Link></li>
+               <li><hr className="dropdown-divider" /></li>
+               <li><button onClick={handleLogout} className="dropdown-item">Logout</button></li>
+             </ul>
+           </li>
+        }
+         
            </ul>
         </div>
 

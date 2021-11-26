@@ -1,0 +1,15 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "frontend"
+		}
+	],
+	"settings": {
+		"java.configuration.updateBuildConfiguration": "automatic",
+		"java.dependency.packagePresentation": "flat",
+		"liveServer.settings.multiRootWorkspaceName": "alokMeds2"
+	}
+}

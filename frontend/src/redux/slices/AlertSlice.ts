@@ -6,6 +6,10 @@ interface AlertState  {
     message: string
     showAlert: boolean
 }
+interface AlertRecieveState  {
+    Stage: string
+    message: string
+}
 
 const initialState: AlertState = {
     Stage:'none',
@@ -17,10 +21,10 @@ const AlertSlice = createSlice({
   name: 'Alert',
   initialState,
   reducers: {
-  setAll:(state,action: PayloadAction<AlertState>)=>{
+  setAll:(state,action: PayloadAction<AlertRecieveState>)=>{
    state.message=action.payload.message
    state.Stage=action.payload.Stage
-   state.showAlert=action.payload.showAlert
+   state.showAlert=true
   },
   unsetAll:(state)=>{
     state.message=''

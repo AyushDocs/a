@@ -5,21 +5,17 @@ export default function Check() {
     useEffect(() => {
     let id: NodeJS.Timeout;
     if(!Undo &&!Close){
-        console.log('negative executed');
-        
         id=setTimeout(() =>{
             setShowCheck(false)
             onComplete();
         },timeToDisappear)
     }
     if(Close){
-        console.log('close executed');
-        clearTimeout(id)
+       clearTimeout(id)
         setShowCheck(false)
         onComplete();
     }
     if(Undo){
-        console.log('undo executed');
         clearTimeout(id)
         setShowCheck(false)
     }

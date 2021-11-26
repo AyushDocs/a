@@ -1,4 +1,6 @@
 package com.alokMeds.api.Publications;
+import java.io.Serializable;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -14,7 +16,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "publ_tbl")
 @NoArgsConstructor
 @AllArgsConstructor
-public class Publications {
+public class Publications implements Serializable{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(unique = true)

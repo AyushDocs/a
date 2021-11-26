@@ -1,4 +1,3 @@
-import axios from "axios";
 import React, { useState } from "react";
 import { Alert, Button, Modal, ModalBody, ModalFooter, ModalHeader, Spinner } from "reactstrap";
 import Typed from "typewriter-effect";
@@ -16,8 +15,6 @@ const AlertSucessText = "Message Sent ";
 const AlertFailureText = "Failed to send message";
 const emailPlaceholder = "Enter your email";
 const queryPlaceholder = "Enter your query";
-
-const api = axios.create();
 interface Props{
 modal:boolean;
 toggle:()=>void
@@ -29,16 +26,14 @@ export default function Form(props:Props) {
   const [query, queryBind, queryReset] = useInput("");
   const [loading, setLoading] = useState(false);
   const onSubmit = (e:React.FormEvent) => {
-    console.log('submitted');
-    
     setLoading(true)
     e.preventDefault()
     setSuccess(false)
     setFailure(false)
-    api
-      .post("http://localhost:8080/api/query/", [{ query, email }])
-      .then((res) => {
-        if(res.status!==200) setFailure(true);
+    const options={method: 'POST','Content-Type':'application/json',body: JSON.stringify({ query, email })}
+    fetch("http://localhost:8080/api/query/",options)
+      .then(res=> {
+        if(!res.ok) setFailure(true);
         setSuccess(true)      
         emailReset()
         queryReset() 

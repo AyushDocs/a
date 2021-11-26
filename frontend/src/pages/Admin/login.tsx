@@ -31,10 +31,10 @@ const AdminLogin = () => {
       adminLogin(email, password)
     .then(({success,errorMessage}) =>{
       if(!success){
-       return dispatch(setAll({showAlert:true,message:errorMessage,Stage:'danger'}))
+       return dispatch(setAll({message:errorMessage,Stage:'danger'}))
       }
       window.sessionStorage.setItem('authenticated','true')
-      dispatch(setAll({showAlert:true,message:'You have authenticated successfully Dr Alok',Stage:'success'}))
+      dispatch(setAll({message:'You have authenticated successfully Dr Alok',Stage:'success'}))
       dispatch(setAdminAuthenticated(success))
       setloading(false);
       setTimeout(()=>window.sessionStorage.removeItem('authenticated'),5*60*60)  

@@ -16,26 +16,25 @@ const Login = () => {
     const navigate=useNavigate()
     const reset=()=>{emailReset();passwordReset();confPasswordReset()}
 
-    const handleSubmit=(e:React.FormEvent)=>{
+    const handleSubmit=async(e:React.FormEvent)=>{
         e.preventDefault();
+        if(password!==confPassword)return setshowAlert(true)
         setloading(true)
-        if(password!==confPassword){
-            setshowAlert(true)
+        try {
+            const {success,errorMessage} =await login(email,password);
+            if(!success) dispatch(setAll({Stage:'danger',message:errorMessage}))
+            window.sessionStorage.setItem('userAuthenticated','true')
+            dispatch(setUserAuthenticated(true))
+            setTimeout(()=>sessionStorage.removeItem('userAuthenticated'),1000*60*15)
+            dispatch(setAll({Stage:'success',message:'Logged in successfully'}))
+            navigate('/home')
+        } catch (error) {
+            dispatch(setAll({Stage:'danger',message:'weak net'}))
+            console.log(error);
+        }
+        finally{
             setloading(false)
         }
-        login(email,password)
-        .then(({success,errorMessage}) => {
-            if(success){
-                window.sessionStorage.setItem('userAuthenticated','true')
-                dispatch(setUserAuthenticated(true))
-                setTimeout(()=>{sessionStorage.removeItem('userAuthenticated')},1000*60*15)
-                dispatch(setAll({Stage:'success',showAlert:true,message:'Logged in successfully'}))
-                navigate('/home')
-            }
-            else dispatch(setAll({Stage:'danger',showAlert:true,message:errorMessage}))
-        })
-        .catch(()=>dispatch(setAll({Stage:'danger',showAlert:true,message:'Wear internet connection'})))
-        .finally(()=>setloading(false))
     }
     return (
      <div className="container my-4">
@@ -51,15 +50,15 @@ const Login = () => {
          <form onSubmit={handleSubmit}>
              <div className="mb-3">
                  <label htmlFor="email" className="form-label">Email address</label>
-                 <input type="email" value={email} {...emailBind} className="form-control" id="email" name="email" aria-describedby="emailHelp" />
+                 <input autoComplete="on"  type="email" value={email} {...emailBind} className="form-control" id="email" name="email" aria-describedby="emailHelp" />
              </div>
              <div className="mb-3">
                  <label htmlFor="password" className="form-label">Password</label>
-                 <input type="password" {...passwordBind} value={password} className="form-control" required name="password" id="password" />
+                 <input autoComplete="on" type="password" {...passwordBind} value={password} className="form-control" required name="password" id="password" />
              </div>
              <div className="mb-3">
                   <label htmlFor="confirm-password" className="form-label">Confirm Password</label>
-                  <input type="password"{...confPasswordBind} value={confPassword}className="form-control" required id="confirm-password" />
+                  <input autoComplete="on" type="password"{...confPasswordBind} value={confPassword}className="form-control" required id="confirm-password" />
               </div>
              
       <div className="d-flex justify-content-between my-3">

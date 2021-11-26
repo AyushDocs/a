@@ -30,14 +30,14 @@ const Signup = () => {
         if(navigator.onLine){
             signup(email, password)
             .then(({success,errorMessage})=>{
-            if(!success) return dispatch(setAll({Stage:'danger',message:errorMessage,showAlert:true}))    
-            dispatch(setAll({Stage:'success',message:'Successfully signed up user',showAlert:true}))      
+            if(!success) return dispatch(setAll({Stage:'danger',message:errorMessage}))    
+            dispatch(setAll({Stage:'success',message:'Successfully signed up user'}))      
             window.sessionStorage.setItem('userAuthenticated','true')
             dispatch(setUserAuthenticated(true))
             setTimeout(()=>{sessionStorage.removeItem('userAuthenticated')},1000*60*15)
             navigate('/home')
             })
-            .catch(()=>dispatch(setAll({Stage:'danger',message:'Network issues',showAlert:true})))
+            .catch(()=>dispatch(setAll({Stage:'danger',message:'Network issues'})))
             .finally(()=>setloading(false))
         }
     }
@@ -55,16 +55,16 @@ const Signup = () => {
           <form onSubmit={handleSubmit}>
               <div className="mb-3">
                   <label htmlFor="email" className="form-label">Email address</label>
-                  <input type="email" value={email} {...emailBind} className="form-control" id="email" required aria-describedby="emailHelp" />
+                  <input type="email" autoComplete="on" value={email} {...emailBind} className="form-control" id="email" required aria-describedby="emailHelp" />
                   <div id="emailHelp"className="form-text">We'll never share your email with anyone else.</div>
               </div>
               <div className="mb-3">
                   <label htmlFor="password" className="form-label">Password</label>
-                  <input type="password" {...passwordBind} value={password} className="form-control" required id="password" />
+                  <input type="password" autoComplete="on" {...passwordBind} value={password} className="form-control" required id="password" />
               </div>
               <div className="mb-3">
                   <label htmlFor="confirm-password" className="form-label">Confirm Password</label>
-                  <input type="password"{...confPasswordBind} value={confPassword}className="form-control" required id="confirm-password" />
+                  <input type="password"autoComplete="on" {...confPasswordBind} value={confPassword}className="form-control" required id="confirm-password" />
               </div>
               
        <div className="d-flex justify-content-between my-3">

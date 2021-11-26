@@ -24,8 +24,8 @@ public class JwtUtil {
     }
 
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
-        final Claims claims = extractAllClaims(token);
-        return claimsResolver.apply(claims);
+            final Claims claims = extractAllClaims(token);
+            return claimsResolver.apply(claims);
     }
     private Claims extractAllClaims(String token) {
         return Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token).getBody();
@@ -46,7 +46,8 @@ public class JwtUtil {
     }
 
     public boolean validateToken(String token) {
-        if(token==null||token.equals(""))return false;
+        if(token==null||token.isEmpty()||token.isBlank())return false;
+        System.out.println("token is"+token);
         try {
              return !isTokenExpired(token);
         } catch (Exception e) {

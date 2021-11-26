@@ -31,14 +31,14 @@ const Publication:React.FC = () => {
       const res=await fetch('http://localhost:8080/api/publications/',options)
       const data=await res.json(); 
       if(data.errorMessage) {
-        dispatch(setAll({showAlert:true,message:data.errorMessage,Stage:'danger'}));
+        dispatch(setAll({message:data.errorMessage,Stage:'danger'}));
         return;
       }
-      dispatch(setAll({showAlert:true,message:'Success',Stage:'success'}))
+      dispatch(setAll({message:'Success',Stage:'success'}))
       resetAll()
       navigate(-1)
     } catch (error) {
-      dispatch(setAll({showAlert:true,message:'Weak internet connection',Stage:'danger'}))
+      dispatch(setAll({message:'Weak internet connection',Stage:'danger'}))
       console.log(error)
       navigate(-1)
     }
@@ -47,11 +47,11 @@ const Publication:React.FC = () => {
     try {
       const options={method:'delete'}
       const res=await fetch(`http://localhost:8080/api/publications/${name}`,options)
-      if(!res.ok)return dispatch(setAll({showAlert:true,message:'failed to delete',Stage:'danger'}))
-      dispatch(setAll({showAlert:true,message:'deleted successfully',Stage:'success'})) 
+      if(!res.ok)return dispatch(setAll({message:'failed to delete',Stage:'danger'}))
+      dispatch(setAll({message:'deleted successfully',Stage:'success'})) 
       navigate(-1)
     } catch (error) {
-      dispatch(setAll({showAlert:true,message:'Weak internet connection',Stage:'danger'}))
+      dispatch(setAll({message:'Weak internet connection',Stage:'danger'}))
       console.log(error,error.message);
     }
     }

@@ -22,19 +22,22 @@ export default function Admin() {
   const [isLast, setIsLast] = useState(false);
   const [loading, setloading] = useState(false)
   const [data, setData] = useState<Data|null>();
-  useEffect(() => {
-    let isMounted = true;
-    setloading(true)
-    fetch(`http://localhost:8080/api/query/?SortBy=${SortBy}&SortBy=${Checked}&offset=${Offset}&size=${page}`)
-    .then(res => {
-        if (isMounted) res.json().then(recdata => setData(recdata));
-      })
-      .catch(() => {
-        if (isMounted) setData(null);
-      })
-      .finally(()=>setloading(false))
-  }, [Checked, Offset, SortBy]);
-  
+  useEffect(()=>{
+  let isMounted =true
+  setloading(true)
+  fetch(`http://localhost:8080/api/auth/query?SortBy=${SortBy}&SortBy=${Checked}&offset=${Offset}&size=${page}`)
+  .then(res => {
+    if (isMounted) res.json().then(recdata => setData(recdata));
+  })
+  .catch(() => {
+    if (isMounted) setData(null);
+  })
+  .finally(()=>setloading(false))
+  return ()=>{
+    isMounted=false
+  }
+  },[Checked, Offset, SortBy])
+
   useEffect(() => {
     if(data) setIsLast(data.last);
     const backBtn:HTMLButtonElement = document?.querySelector("#back")!;
@@ -57,7 +60,7 @@ export default function Admin() {
     <>    
       <div className="container">
         {/* search bar */}
-        <div className="d-flex justify-content-center my-2">
+       <div className="d-flex justify-content-center my-2">
           <Link className="btn btn-outline-danger" to="/admin/publications/">Publications</Link>
         </div>
         <div className="d-flex mt-3">
@@ -79,9 +82,9 @@ export default function Admin() {
           </button>
         </div>
         {loading && <Spinner />}
-        {data?.content.length<1 && <span className="text-center"><h3><b className="goog-font">No questions for you</b></h3></span>}
+        {data?.content?.length<1 && <span className="text-center"><h3><b className="goog-font">No questions for you</b></h3></span>}
         <div className="row">
-            {data?.content.map((item:AdminItemProps)=>{return(<div key={item.id} className="col-md-4"><AdminItem {...item} /></div>)})}
+            {data?.content?.map((item:AdminItemProps)=>{return(<div key={item.id} className="col-md-4"><AdminItem {...item} /></div>)})}
            {loading && [1,2,3,4,5,6].map((item)=> 
            <div key={item} className="col-md-4"> <AdminItemSkeleton/></div>
            )}
