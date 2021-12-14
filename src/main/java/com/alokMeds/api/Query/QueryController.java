@@ -3,6 +3,7 @@ package com.alokMeds.api.Query;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -11,41 +12,51 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.AllArgsConstructor;
 
+@CrossOrigin(origins ="http://localhost:3000",allowedHeaders="*",allowCredentials = "true")
 @RestController
-@CrossOrigin(origins={"http://localhost:3000","http://localhost:8080","alokmeds.herokuapp.com"}, allowedHeaders = "*")
-@RequestMapping("/api")
 @AllArgsConstructor
-public class QueryController {
-    private QueryRepository queryRepository;
-
-    @PostMapping("/query")
-    public void save(@RequestBody QueryRecieved queryParam) {
-        queryRepository.save(QueryRecieved.queryRecievedToQuery(queryParam));
-    }
-
+@RequestMapping("/api")
+class QueryController {
+    QueryRepository repository;
+    
     @GetMapping("/auth/admin/query")
-    // @Secured({"ADMIN,ROOT"})
-    public Page<Query> findAll(@RequestParam Optional<Integer> offset,
-     @RequestParam Optional<Integer> size,@RequestParam Optional<String> sortBy) {
-        return queryRepository.findWithPagination(offset, size, sortBy);          
+    public ResponseEntity<Page<Query>> findAll(Optional<Integer> offset, Optional<Integer> size,
+    Optional<String> sortBy) {
+        try {
+            Page<Query> items = repository.findWithPagination(offset, size, sortBy);
+            if (items.isEmpty())
+             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+            return ResponseEntity.ok(items);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
     }
-    @GetMapping("/auth/user/query/id/{id}")
+    @GetMapping("/auth/admin/query/{id}")
     public ResponseEntity<Query> findById(@PathVariable String id) {
-        return ResponseEntity.ok(queryRepository.findById(id).get());
+        return ResponseEntity.of(repository.findById(id));
     }
-
-    @DeleteMapping("/auth/user/query/{id}")
-    public void delete(@PathVariable String id) {
-     queryRepository.deleteById(id);
-     }
-
-    @DeleteMapping("/auth/admin/query")
-    public void deleteAll() {
-    queryRepository.deleteAll();
+    
+    @PostMapping("/query")
+    public ResponseEntity<Void> save(@RequestBody QueryDto dto) {
+        try {
+            repository.save(dto.toQuery());
+            return ResponseEntity.status(HttpStatus.CREATED).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).build();
+        }
+    }
+    @DeleteMapping("/auth/admin/query/{id}")
+    public ResponseEntity<Void> delete(@PathVariable String id) {
+        try {
+            repository.deleteById(id);
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).build();
+        }
     }
 }

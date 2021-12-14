@@ -1,0 +1,18 @@
+# @format
+
+spring.jpa:
+  show-sql: false
+spring.jpa.hibernate.ddl-auto: create-drop
+spring.datasource:
+  url: jdbc:postgresql://localhost:5433/postgres
+  password: 123456
+  username: postgres
+alokmeds.security:
+  pepper: fvgjbnejnveiovneibvnfjubnvionroi
+  rounds: 10
+  cookieLife: 900000
+  cookieName: token
+  jwtSecret: ayush
+spring.mail:
+  username:
+  password:

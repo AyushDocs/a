@@ -24,7 +24,7 @@ public class Query{
 	
 	public Query() {
 		this.date =LocalDateTime.now();
-		this.id=UUID.randomUUID().toString().substring(0, 18);
+		this.id=UUID.randomUUID().toString();
 	}
 	
 	public Query(@NonNull String query,@NonNull String email) {

@@ -2,33 +2,31 @@ package com.alokMeds.api.security;
 
 import java.util.Date;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import lombok.AllArgsConstructor;
 
 
 @Service
+@AllArgsConstructor
 public class JwtUtil {
-    @Value("${jwt.secret}")
-    private String SECRET_KEY;
-    private int timeOfExpiration = 1000 * 60 *15;
-    //private int timeOfExpiration = 1000 * 60;
-
+    private SecurityValues securityValues;
     public Date extractExpiration(String token) {
-        return extractClaim(token, Claims::getExpiration);
+        return extractClaim(token, Claims::getExpiration).get();
     }
 
-    public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
+    public <T> Optional<T> extractClaim(String token, Function<Claims, T> claimsResolver) {
             final Claims claims = extractAllClaims(token);
-            return claimsResolver.apply(claims);
+            return Optional.ofNullable(claimsResolver.apply(claims)) ;
     }
     private Claims extractAllClaims(String token) {
-        return Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token).getBody();
+        return Jwts.parser().setSigningKey(securityValues.getJwtSecret()).parseClaimsJws(token).getBody();
     }
 
     public boolean isTokenExpired(String token) {
@@ -41,13 +39,12 @@ public class JwtUtil {
     private String createToken(Map<String, Object> claims) {
 
         return Jwts.builder().setClaims(claims).setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis()+timeOfExpiration))
-                .signWith(SignatureAlgorithm.HS256, SECRET_KEY).compact();
+                .setExpiration(new Date(System.currentTimeMillis()+securityValues.getCookieLife()))
+                .signWith(SignatureAlgorithm.HS256, securityValues.getJwtSecret()).compact();
     }
 
     public boolean validateToken(String token) {
         if(token==null||token.isEmpty()||token.isBlank())return false;
-        System.out.println("token is"+token);
         try {
              return !isTokenExpired(token);
         } catch (Exception e) {

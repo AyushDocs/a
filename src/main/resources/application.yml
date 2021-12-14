@@ -1,0 +1,12 @@
+# @format
+
+spring:
+  profiles.active: dev
+  main.allow-bean-definition-overriding: true
+
+spring.mail:
+    host: smtp.gmail.com
+    port: 587
+    properties.mail.smtp:
+        auth: true
+        starttls.enable: true

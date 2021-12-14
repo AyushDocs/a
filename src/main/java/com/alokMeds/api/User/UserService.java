@@ -1,20 +1,32 @@
 package com.alokMeds.api.User;
+
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
-import com.alokMeds.api.security.AuthenticationResponse;
+import com.alokMeds.api.Exceptions.ClaimNotFoundException;
+import com.alokMeds.api.Exceptions.UserNotFoundException;
+import com.alokMeds.api.Exceptions.UserSignupFailedException;
+import com.alokMeds.api.Publications.PublicationRepo;
+import com.alokMeds.api.Publications.Publications;
 import com.alokMeds.api.security.JwtUtil;
+import com.alokMeds.api.security.OtpService;
+import com.alokMeds.api.security.PasswordEncoder;
+import com.alokMeds.api.security.SecurityValues;
+import com.alokMeds.api.security.models.AuthenticationRequest;
+import com.alokMeds.api.security.models.AuthenticationResponse;
+import com.alokMeds.api.security.models.Response;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import lombok.AllArgsConstructor;
 
 @Service
@@ -22,71 +34,105 @@ import lombok.AllArgsConstructor;
 public class UserService {
   private JwtUtil jwtUtil;
   private UserRepository userRepository;
-  private static final String COOKIE_NAME="token";
+  private PublicationRepo publicationRepository;
   private PasswordEncoder passwordEncoder;
-  private AuthenticationManager authenticationManager;
+  private SecurityValues securityValues;
+  private OtpService otpService;
+  private static final String OTP_JWT_EMAIL = "email";
+  private static final String NO_USER_ERROR_MESSAGE = "user not found with %s %s";
+  private static final String USER_SIGNUP_ERROR_MESSAGE = "User with email %s already exists";
+  private static final String LOGIN_ERROR_MESSAGE = "Please enter correct credentials";
 
-  public ResponseEntity<AuthenticationResponse> adminLogin(String email, String password) {
-    AuthenticationResponse authResponse = new AuthenticationResponse();
-    User user = userRepository.findByEmail(email);
-    if (user == null || !passwordEncoder.matches(password, user.getPassword()))
-     return ResponseEntity.ok(authResponse.setAll("Enter valid Credentials",false));
-     authResponse.setSuccess(true);
-     return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE,addCookieInResponse(user)).body(authResponse);
+  public void sendOtp(String email, String password) {
+    if (userRepository.existsByEmail(email))
+      throw new UserSignupFailedException(String.format(USER_SIGNUP_ERROR_MESSAGE, email));
+    User user=new User();
+    user.setEmail(email);
+    user.setPassword(passwordEncoder.encode(password, user.getSalt()));
+    otpService.sendOtpToUser(user);
   }
-
-  public ResponseEntity<AuthenticationResponse> signup(UserRecieved userRecieved) {
-    AuthenticationResponse authResponse = new AuthenticationResponse();
-    User maybeSavedUser = userRepository.findByEmail(userRecieved.getEmail());
-    if (maybeSavedUser != null)
-     return ResponseEntity.ok(authResponse.setAll("user with similar credentials exists", false));
-    User user = new User();
-    user.setEmail(userRecieved.getEmail());
-    user.setPassword(passwordEncoder.encode(userRecieved.getPassword()));
+  public ResponseEntity<?> signup(String email,int otp) {
+    User user=otpService.findUserWithCorrectOtp(email, otp);
     userRepository.save(user);
-    return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE,addCookieInResponse(user)).body(authResponse.setAll(null, true));
+    return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, createCookie(user.getUuid()))
+        .body(AuthenticationResponse.USER_SUCCESS_RESPONSE);
   }
 
-  public ResponseEntity<AuthenticationResponse> login(UserRecieved userRecieved){
-   UserDetails userDetails= manageAuthentication(userRecieved.getEmail(),userRecieved.getPassword());
-   String token=jwtUtil.generateToken(null);
-   AuthenticationResponse authResponse = new AuthenticationResponse();
-   authResponse.setAll("message", true);
-  //  return ResponseEntity.status(200).header(HttpHeaders.SET_COOKIE,ResponseCookie.from(COOKIE_NAME, token)).body(authResponse);
-    // AuthenticationResponse authResponse = new AuthenticationResponse();
-    // User user = userRepository.findByEmail(userRecieved.getEmail());
-    // if (user == null)  return ResponseEntity.ok(authResponse.setAll("Please enter correct credentials", false));
-    // boolean passwordEqual = passwordEncoder.matches(userRecieved.getPassword(), user.getPassword());
-    // boolean emailEqual = user.getEmail().equals(userRecieved.getEmail());
-    // if (passwordEqual && emailEqual) 
-    //    return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE,addCookieInResponse(user)).body(authResponse.setAll("Successfully logged in user", true));
-    return ResponseEntity.ok(authResponse.setAll("Please enter correct credentials", false));
+  public ResponseEntity<?> login(AuthenticationRequest request) {
+    User user = userRepository.findByEmail(request.getEmail())
+        .orElseThrow(() -> new UserNotFoundException(String.format(NO_USER_ERROR_MESSAGE,OTP_JWT_EMAIL, request.getEmail())));
+    if (!passwordEncoder.matches(request.getPassword(), user.getPassword(), user.getSalt())
+        || !user.getEmail().equals(request.getEmail()))
+      return ResponseEntity.ok(Response.generateFailureResponse(LOGIN_ERROR_MESSAGE));
+    if (user.getRoles().contains("ADMIN")) return ResponseEntity
+        .ok()
+        .header(HttpHeaders.SET_COOKIE, createCookie(user.getUuid()))
+        .body(AuthenticationResponse.ADMIN_SUCCESS_RESPONSE);
+      return ResponseEntity.ok()
+             .header(HttpHeaders.SET_COOKIE, createCookie(user.getUuid()))
+             .body(AuthenticationResponse.USER_SUCCESS_RESPONSE);
   }
-  private UserDetails manageAuthentication(String email, String password) {
-    Authentication authentication =authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));
-    return (UserDetails) authentication.getPrincipal();
+  public String generateOtpResponse(String email,String  password){
+    return jwtUtil.generateToken(Map.of(OTP_JWT_EMAIL,email,"password",password));
   }
-
-  public ResponseEntity<AuthenticationResponse> logout(String token) {
-    AuthenticationResponse authResponse = new AuthenticationResponse();
-    if (!jwtUtil.validateToken(token))
-      return ResponseEntity.ok().body(authResponse.setAll("Please send token with corren credentials", false));
-
-      return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE,removeCookieFromResponse()).body(authResponse.setAll(null, true));
+  public ResponseEntity<?> logout() {
+    return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, createCookie(null, 0))
+        .body(Response.SUCCESS_RESPONSE);
   }
 
-  private String jwtWithUuid(String uuid) {
-    Map<String, Object> claims = new HashMap<>();
-    claims.put("id", uuid);
-    return jwtUtil.generateToken(claims);
+  private String jwtWithUuid(String id) {
+    Map<String,Object> m=new HashMap<>();
+    m.put("id",id);
+    return jwtUtil.generateToken(m);
   }
 
-  private String addCookieInResponse(User user) {
-    return ResponseCookie.from(COOKIE_NAME,jwtWithUuid(user.getUuid())).maxAge(1000*60*15l)
-   .path("/").httpOnly(true).build().toString();
+  private String createCookie(String uuid) {
+    return createCookie(uuid, securityValues.getCookieLife());
   }
-  private String removeCookieFromResponse() {
-    return ResponseCookie.from(COOKIE_NAME,"")
-    .maxAge(0).path("/").httpOnly(true).secure(true).build().toString();
+
+  private String createCookie(String uuid, long age) {
+    return ResponseCookie.from(securityValues.getCookieName(), jwtWithUuid(uuid)).maxAge(age)
+        .httpOnly(true).build().toString();
+  }
+
+  public ResponseEntity<List<User>> getAll() {
+    try {
+      List<User> items = userRepository.findAll();
+      if (items.isEmpty()) return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+      return ResponseEntity.ok(items);
+    } catch (Exception e) {
+      return ResponseEntity.internalServerError().body(null);
+    }
+  }
+  public ResponseEntity<Void> addUserPubblication(String token,String link) {
+    try {
+      String uuid=(String)jwtUtil.extractClaim(token, i->i.get("id")).orElseThrow(ClaimNotFoundException::new);
+      User u=userRepository.findByUuid(uuid).orElseThrow(()->new UserNotFoundException(String.format(NO_USER_ERROR_MESSAGE,"uuid",uuid)));
+      u.pushPublications(publicationRepository.findByLink(link));     
+      userRepository.save(u); 
+      return ResponseEntity.ok().build();
+    } catch (Exception e) {
+      e.printStackTrace();
+      return ResponseEntity.internalServerError().build();
+    }
+  }
+
+  public ResponseEntity<Page<Publications>> getPublicationsForFirstPage(String token) {
+    try {
+      if(token==null)return ResponseEntity.ok(publicationRepository.findSomePublications());
+      Optional<Object> uuidOptional=jwtUtil.extractClaim(token, i->i.get("id"));
+      if(!uuidOptional.isPresent())return ResponseEntity.ok(publicationRepository.findSomePublications());
+      String uuid=(String) uuidOptional.get();
+      Optional<User> userOptional=userRepository.findByUuid(uuid);
+      if(!userOptional.isPresent())return ResponseEntity.ok(publicationRepository.findSomePublications());
+      User u=userOptional.get();
+      if(u.getFirstPublication()==null) return ResponseEntity.ok(publicationRepository.findSomePublications());
+      return ResponseEntity.ok(new PageImpl<Publications>(u.findPublications()));
+    } catch (ExpiredJwtException e) {
+      return ResponseEntity.ok(publicationRepository.findSomePublications());
+    } catch (Exception e) {
+      e.printStackTrace();
+      return ResponseEntity.internalServerError().body(null);
+    }
   }
 }
