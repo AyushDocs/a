@@ -1,7 +1,7 @@
 # @format
 
 spring:
-  profiles.active: dev
+  profiles.active: production
   main.allow-bean-definition-overriding: true
   mail:
     host: smtp.gmail.com

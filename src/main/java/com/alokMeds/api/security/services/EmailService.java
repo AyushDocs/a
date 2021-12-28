@@ -20,6 +20,6 @@ public class EmailService {
         simpleMailMessage.setSubject(subject);
         simpleMailMessage.setText(message);
         log.info("user with email {} has otp {}",to,message);
-        // javaMailSender.send(simpleMailMessage); 
+        javaMailSender.send(simpleMailMessage); 
     }
 }

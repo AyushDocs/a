@@ -12,16 +12,8 @@ spring:
     show-sql: false
 alokmeds.security:
   cookieLife: 600
-  # cookieLife: 60*10
   cookieName: token
   jwtSecret: ayush
 spring.mail:
   username:
-  password:
-# logging:
-#   level:
-#     org.springframework: ERROR
-#   pattern:
-#     console: '%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n'
-#   file:
-#     name: app.log
+  password: 

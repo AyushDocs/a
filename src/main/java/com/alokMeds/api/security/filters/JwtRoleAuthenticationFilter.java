@@ -38,7 +38,7 @@ public class JwtRoleAuthenticationFilter extends OncePerRequestFilter {
         }
         Cookie[] cookies=req.getCookies();
         String token = getToken(cookies);
-        if(token==""){
+        if(token=="some"){
             filterChain.doFilter(req, res);
              return;
         }
@@ -61,7 +61,7 @@ public class JwtRoleAuthenticationFilter extends OncePerRequestFilter {
         
         String cookieName = securityValues.getCookieName();
         return Arrays.stream(cookies).filter(i -> i.getName().equals(cookieName))
-                .findFirst().orElse(new Cookie(securityValues.getCookieName(),"")).getValue();
+                .findFirst().orElse(new Cookie(securityValues.getCookieName(),"some")).getValue();
     }
     //
     // @Override

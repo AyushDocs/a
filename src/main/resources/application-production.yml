@@ -7,3 +7,6 @@ spring.datasource:
   url: ${DATABASE_URL}
 alokmeds.security:
   jwtSecret: ${JWT_SECRET}
+spring.mail:
+  username: ayushalokdubey@gmail.com
+  password: bfpzdcekvgqbbkwy

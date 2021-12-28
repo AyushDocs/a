@@ -7,8 +7,11 @@ spring.datasource:
   url: jdbc:postgresql://localhost:5433/test
   password: 123456
   username: postgres
-alokmeds.security:
-  jwtSecret: 8391374#$23eundjc#*#E*&jidHJBDCBU^&YEHB@$rUSHX#%^NUEDYG@#*#$tgver
 spring.mail:
-  username:
-  password:
+  username: ayushalokdubey@gmail.com
+  password: bfpzdcekvgqbbkwy
+
+alokmeds.security:
+  cookieLife: 600
+  cookieName: token
+  jwtSecret: 8391374#$23eundjc#*#E*&jidHJBDCBU^&YEHB@$rUSHX#%^NUEDYG@#*#$tgver
