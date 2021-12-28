@@ -1,11 +1,9 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { createSlice } from '@reduxjs/toolkit'
 import { RootState } from '../store'
-
-interface IsAuthenticatedState {
-   isAuth: boolean
+interface state{
+  isAuth:boolean
 }
-
-const initialState: IsAuthenticatedState = {
+const initialState:state= {
   isAuth:false
 }
 
@@ -13,12 +11,12 @@ const isAuthenticatedSlice = createSlice({
   name: 'isAuth',
   initialState,
   reducers: {
-    setAdminAuthenticated:(state,action: PayloadAction<boolean>)=>{
+    setAdminAuthenticated:(state,action)=>{
       state.isAuth=action.payload
     }
   }
 })
 
 export const { setAdminAuthenticated } = isAuthenticatedSlice.actions
-export const selectCount = (state: RootState) => state.IsAdminAuthenticated.isAuth;
+export const selectCount = (state:RootState) => state.IsAdminAuthenticated.isAuth;
 export default isAuthenticatedSlice.reducer;

@@ -1,0 +1,77 @@
+/** @format */
+
+*,
+*::after,
+*::before {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+body {
+	background-color: hsl(0, 0%, 20%);
+}
+li {
+	list-style: none;
+}
+nav.navbar {
+	background-color: grey;
+	font-size: 1.5rem;
+
+	display: flex;
+	justify-content: space-around;
+}
+.nav-list > li {
+	margin-left: 50px;
+}
+.nav-brand,
+.nav-link {
+	text-decoration: none;
+	color: white;
+}
+.nav-list {
+	display: flex;
+	justify-content: space-around;
+	transition: 0.3s;
+}
+.line {
+	height: 2px;
+	width: 30px;
+	background-color: aliceblue;
+	margin-top: 5px;
+}
+.hamburger {
+	padding-bottom: 5px;
+	cursor: pointer;
+}
+.hide {
+	visibility: hidden;
+}
+@media only screen and (max-width: 800px) {
+	.navbar > li {
+		display: block;
+	}
+	.nav-list {
+		position: fixed;
+		left: -100%;
+		top: 5rem;
+		width: 100%;
+		transition: 0.3s;
+		box-shadow: 0 10px 27px rgba(0, 0, 0, 0.05);
+		flex-direction: column;
+	}
+	body {
+		background-color: #fff;
+	}
+	.hide {
+		visibility: visible;
+	}
+	.hamburger.active .line:nth-child(1) {
+		opacity: 0;
+	}
+	.hamburger.active .line:nth-child(2) {
+		transform: translateY(8px) rotate(45deg);
+	}
+	.hamburger.active .line:nth-child(3) {
+		transform: translateY(-8px) rotate(-45deg);
+	}
+}

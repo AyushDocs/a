@@ -84,31 +84,28 @@ export default function Navbar() {
 							</button>
 						</span>
 						{isAuthenticated && (
+							// jj
 							<li className='nav-item dropdown'>
-								<button id='navbarDropdown' data-bs-toggle='dropdown' aria-expanded='false' className='nav-link dropdown-toggle'>
+								<a role='button' href='#' className='nav-link dropdown-toggle' id='navbarDropdown' data-bs-toggle='dropdown' aria-expanded='false'>
 									Welcome
-								</button>
+								</a>
 								<ul className='dropdown-menu' aria-labelledby='navbarDropdown'>
 									<li>
-										<Link to='/' className='dropdown-item'>
-											your queries
-										</Link>
-									</li>
-									<li>
-										<Link to='/' className='dropdown-item'>
-											Change Details
+										<Link className='dropdown-item  bg-light text-dark' to='#'>
+											View your queries
 										</Link>
 									</li>
 									<li>
 										<hr className='dropdown-divider' />
 									</li>
 									<li>
-										<button onClick={handleLogout} className='dropdown-item'>
-											Logout
-										</button>
+										<Link className='dropdown-item bg-light text-dark' to='#'>
+											Edit your details
+										</Link>
 									</li>
 								</ul>
 							</li>
+							// mm
 						)}
 					</ul>
 				</div>

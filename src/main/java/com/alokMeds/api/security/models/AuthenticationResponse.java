@@ -1,5 +1,7 @@
 package com.alokMeds.api.security.models;
 
+import com.alokMeds.api.Utils.Roles;
+
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -15,6 +17,6 @@ public class AuthenticationResponse extends Response {
         setErrorMessage(errorMessage);
         setSuccess(success);
     }
-    public static final AuthenticationResponse USER_SUCCESS_RESPONSE = new AuthenticationResponse("USER",null,true);
-    public static final AuthenticationResponse ADMIN_SUCCESS_RESPONSE = new AuthenticationResponse("ADMIN",null,true);
+    public static final AuthenticationResponse USER_SUCCESS_RESPONSE = new AuthenticationResponse(Roles.USER,null,true);
+    public static final AuthenticationResponse ADMIN_SUCCESS_RESPONSE = new AuthenticationResponse(Roles.ADMIN,null,true);
 }

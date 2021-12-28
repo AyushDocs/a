@@ -2,37 +2,28 @@
 
 import { useContext, useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
+import axios from '../../../axios';
 import { AlertContext } from '../../../context/AlertContext';
 interface Data {
+	date: number;
 	email: string;
 	query: string;
-	date: string;
 }
 export const FullScreenQuery = () => {
 	const [Data, setData] = useState<Data>();
 	const navigate = useNavigate();
 	const context = useContext(AlertContext);
-	const id: string = useParams().id ?? '';
+	const id = useParams().id ?? '';
 	useEffect(() => {
-		let isMounted = true;
-		const options: RequestInit = { credentials: 'include' };
-		fetch(`${process.env.REACT_APP_SERVER_URL}/api/auth/admin/query/${id}`, options)
-			.then(res => {
-				if (isMounted) return res.json();
-			})
-			.then(data => {
-				if (isMounted) setData(data);
-			});
-		return () => {
-			isMounted = false;
-		};
+		axios.get(`/api/query/${id}`).then(res => setData(res.data));
 	}, [id]);
 	const deleteQuery = () => {
-		context?.setUndo(false);
-		context?.setText('Deleted Query');
-		context?.setTimeToDisappear(6000);
-		context?.setOnComplete(() => () => fetch(`${process.env.REACT_APP_SERVER_URL}/api/auth/admin/query/${id}`, { method: 'DELETE' }));
-		context?.setShowCheck(true);
+		if (!context) return;
+		context.setUndo(false);
+		context.setText('Deleted Query');
+		context.setTimeToDisappear(6000);
+		context.setOnComplete(() => () => axios.delete(`/api/auth/admin/query/${id}`));
+		context.setShowCheck(true);
 		navigate('/admin/');
 	};
 	return (

@@ -3,7 +3,7 @@ import { AlertContext } from '../../context/AlertContext';
 export default function Check() {
     const context = useContext(AlertContext);
     useEffect(() => {
-    let id: NodeJS.Timeout|undefined=undefined;
+    let id:NodeJS.Timeout|undefined=undefined;
     if(!context?.Undo &&!context?.Close){
         //open and not undo
         id=setTimeout(() =>{

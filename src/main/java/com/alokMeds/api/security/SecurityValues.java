@@ -9,8 +9,6 @@ import lombok.Data;
 @Data
 @Component
 public class SecurityValues {
-    private String pepper;
-    private int rounds;
     private long cookieLife;
     private String cookieName;
     private String jwtSecret;

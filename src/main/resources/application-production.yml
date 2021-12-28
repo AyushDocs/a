@@ -1,11 +1,9 @@
-spring.jpa: 
-    show-sql: true
+# @format
+
+spring.jpa:
+  show-sql: false
 spring.jpa.hibernate.ddl-auto: update
-spring.datasource: 
-    url: postgresql//giotdsavgtaewq:794227273ece6121c45037865c7537541e3ba493e1a2801226358899107b7611@ec2-34-247-151-118.eu-west-1.compute.amazonaws.com:5432/dl8s5kqj14gup
-    password: 794227273ece6121c45037865c7537541e3ba493e1a2801226358899107b7611
-    username: giotdsavgtaewq
+spring.datasource:
+  url: ${DATABASE_URL}
 alokmeds.security:
-    pepper: ^g34zuB&#n29jfnuen^&#*Y#Hn8urhf3n827HN!U#*{rtgth}$2x\c3x/byrw4hgq
-    rounds: 15
-    jwtSecret: 4iugvmujh59ie6C$WO%YKG(L^)OTYG^K(48jtegmv8j943z.3fmhaf8u3i/$I%*ERJT)
+  jwtSecret: ${JWT_SECRET}

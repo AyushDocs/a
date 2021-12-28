@@ -1,28 +1,21 @@
 /** @format */
 
-import React, { ChangeEvent, useEffect, useState } from 'react';
+import React, { ChangeEvent, FormEvent, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAppDispatch } from '../../../../redux/reducerHooks';
 import { setAll } from '../../../../redux/slices/AlertSlice';
-interface Data {
-	name: string;
-	imgUrl: string;
-	description: string;
-	author: string;
-	link: string;
-}
-const initialState: Data = {
+const initialState = {
 	name: '',
 	imgUrl: '',
 	description: '',
 	author: '',
 	link: '',
 };
-const EditPublications: React.FC = () => {
-	const [Data, setData] = useState<Data>(initialState);
-	const [method, setMethod] = useState<string>();
-	const id: string | undefined = useParams().id;
-	const handleChange = (e: ChangeEvent<HTMLInputElement>) => setData({ ...Data, [e.target.name]: e.target.value });
+const EditPublications= () => {
+	const [Data, setData] = useState(initialState);
+	const [method, setMethod] = useState<string>()
+	const id= useParams().id;
+	const handleChange = (e:ChangeEvent<HTMLInputElement>) => setData({ ...Data, [e.target.name]: e.target.value });
 	useEffect(() => {
 		let isMounted = true;
 		fetch(`${process.env.REACT_APP_SERVER_URL}/api/auth/admin/publications/${id}`)
@@ -38,7 +31,7 @@ const EditPublications: React.FC = () => {
 	}, [id]);
 	const navigate = useNavigate();
 	const dispatch = useAppDispatch();
-	const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+	const handleSubmit = async (e:FormEvent) => {
 		e.preventDefault();
 		const body = method === 'PUT' ? JSON.stringify(Data) : null;
 		const options = { body, method, headers: { 'Content-Type': 'application/json' } };

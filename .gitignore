@@ -8,5 +8,4 @@ node_modules
 
 ### VS Code ###
 .vscode/
-/src/main/resources/public/
 /src/frontend/

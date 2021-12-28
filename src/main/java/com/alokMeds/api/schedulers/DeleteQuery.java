@@ -19,5 +19,7 @@ public class DeleteQuery {
     public void deleteQueriesOlderThanAMonth() {
         queryRepository.deleteAll(queryRepository.findAll().parallelStream()
                 .filter(query -> query.getDate().plus(Duration.ofDays(30)).isAfter(LocalDateTime.now())).toList());
+        // queryRepository.deleteAll(queryRepository.findAll()
+        //         .filter(query -> query.getDate().plus(Duration.ofDays(30)).isAfter(LocalDateTime.now())));
     }
 }

@@ -2,16 +2,13 @@
 
 import React, { ChangeEvent } from 'react';
 import { Link } from 'react-router-dom';
-interface Props {
-	SortBy: string;
-	setSortBy: React.Dispatch<React.SetStateAction<string>>;
-	Checked: string;
-	setChecked: React.Dispatch<React.SetStateAction<string>>;
-	isPublicationPage: boolean;
-	setIsPublicationPage: React.Dispatch<React.SetStateAction<boolean>>;
+interface Props{ 
+	SortBy:string, setSortBy:React.Dispatch<React.SetStateAction<string>> ,
+	Checked:boolean, setChecked:React.Dispatch<React.SetStateAction<boolean>> ,
+	isPublicationPage:boolean, setIsPublicationPage:React.Dispatch<React.SetStateAction<boolean>> 
 }
-const AdminHeader: React.FC<Props> = ({ SortBy, setSortBy, Checked, setChecked, isPublicationPage, setIsPublicationPage }) => {
-	const handleChange = (e: ChangeEvent<HTMLSelectElement>) => setSortBy(e.target.value);
+const AdminHeader:React.FC<Props> = ({ SortBy, setSortBy, Checked, setChecked, isPublicationPage, setIsPublicationPage }) => {
+	const handleChange = (e:ChangeEvent<HTMLSelectElement>) => setSortBy(e.target.value);
 	return (
 		<>
 			{/* search bar */}
@@ -37,7 +34,7 @@ const AdminHeader: React.FC<Props> = ({ SortBy, setSortBy, Checked, setChecked, 
 					<label className='form-check-label ' htmlFor='flexSwitchCheckDefault'>
 						<b>Reverse Content</b>
 					</label>
-					<input className='form-check-input' onChange={() => setChecked(Checked === 'ASC' ? 'DESC' : 'ASC')} type='checkbox' role='switch' />
+					<input className='form-check-input' onChange={() => setChecked(!Checked)} type='checkbox' role='switch' />
 				</div>
 				<button className='btn btn-sm btn-secondary' type='submit'>
 					Search

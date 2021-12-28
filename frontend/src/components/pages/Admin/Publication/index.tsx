@@ -1,12 +1,9 @@
 /** @format */
 
 import { useEffect, useRef, useState } from 'react';
+import axios from '../../../../axios';
+import { default as Item } from '../../../../Types/Publication';
 import Publication from '../Item/AllContents';
-interface Item {
-	name: string;
-	imgUrl: string;
-	id: string;
-}
 interface Data {
 	content: Item[];
 	last: boolean;
@@ -17,30 +14,20 @@ const AdminPublications = () => {
 	const backBtn = useRef<HTMLButtonElement>(null);
 	const nextBtn = useRef<HTMLButtonElement>(null);
 	useEffect(() => {
-		let isMounted = true;
-		fetch(`${process.env.REACT_APP_SERVER_URL}/api/auth/admin/publications/?offset=${Offset}&page=6`)
-			.then(res => {
-				if (isMounted) return res.json();
-			})
-			.then(data => {
-				if (isMounted) setData(data);
-			})
-			.catch(err => console.error(err));
-		return () => {
-			isMounted = false;
-		};
+		axios.get(`${process.env.REACT_APP_SERVER_URL}/api/auth/admin/publications/?offset=${Offset}&page=6`).then(res => setData(res.data));
 	}, [Offset]);
 	useEffect(() => {
-		if (Offset === 0 && backBtn.current != null) {
+		if (backBtn.current == null || nextBtn.current == null) return;
+		if (Offset === 0) {
 			backBtn.current.disabled = true;
 		}
-		if (Offset !== 0 && backBtn?.current?.disabled === true) {
+		if (Offset !== 0 && backBtn.current.disabled === true) {
 			backBtn.current.disabled = false;
 		}
-		if (Data?.last && nextBtn.current != null) {
+		if (Data?.last) {
 			nextBtn.current.disabled = true;
 		}
-		if (!Data?.last && nextBtn?.current?.disabled === true) {
+		if (!Data?.last && nextBtn.current.disabled === true) {
 			nextBtn.current.disabled = false;
 		}
 	}, [Data?.last, Offset]);

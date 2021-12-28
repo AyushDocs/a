@@ -8,28 +8,29 @@ import ProtectedRoute from '../Authentication/ProtectedAdminRoute';
 import AlertState from '../context/AlertContext';
 import { useAppDispatch, useAppSelector } from '../redux/reducerHooks';
 import { unsetAll } from '../redux/slices/AlertSlice';
+import About from './About';
 import './App.css';
 import Check from './Check/Check';
 import Footer from './Footer';
 import Navbar from './Navbar';
-import About from './pages/About';
 import Admin from './pages/Admin';
 import CreatePublications from './pages/Admin/Publication/CreatePublication';
 import EditPublication from './pages/Admin/Publication/EditPublication';
 import AdminFull from './pages/AdminFullScreenQuery';
 import Home from './pages/Home';
 import Login from './pages/Login';
-import Publications from './pages/Publication/';
+import Publications from './pages/Publication';
 import Signup from './pages/Signup';
-export const App: React.FC = () => {
+const App = () => {
 	const { color, showAlert, message } = useAppSelector(state => state.Alert);
 	const dispatch = useAppDispatch();
 	const onClose = () => dispatch(unsetAll());
 
 	useEffect(() => {
-		let id: NodeJS.Timeout;
-		if (showAlert) id = setTimeout(() => dispatch(unsetAll()), 6000);
-		return () => clearTimeout(id);
+		let id: NodeJS.Timeout | undefined = showAlert ? setTimeout(() => dispatch(unsetAll()), 6000) : undefined;
+		return () => {
+			if (id !== undefined) clearTimeout(id);
+		};
 	}, [dispatch, showAlert]);
 
 	return (
@@ -54,8 +55,8 @@ export const App: React.FC = () => {
 						<Route path='/signup' element={<Signup />} />
 						<Route path='/publications/' element={<Publications />} />
 
-						<Route path='/admin/' element={<ProtectedRoute component={Admin} />} />
-						<Route path='/admin/query_id/:id' element={<ProtectedRoute component={AdminFull} />} />
+						<Route path='/admin/' element={<ProtectedRoute component={() => <Admin ShowPublicationPage={false} />} />} />
+						<Route path='/admin/query/:id' element={<ProtectedRoute component={AdminFull} />} />
 						<Route path='/admin/publications/:id' element={<ProtectedRoute component={EditPublication} />} />
 						<Route path='/admin/publications/' element={<ProtectedRoute component={() => <Admin ShowPublicationPage={true} />} />} />
 						<Route path='/admin/publications/create' element={<ProtectedRoute component={CreatePublications} />} />

@@ -1,51 +1,51 @@
 /** @format */
 
-import React, { useRef, useState } from 'react';
+import React, { FormEvent, useState } from 'react';
 import { Alert, Button, Modal, ModalBody, ModalFooter, ModalHeader, Spinner } from 'reactstrap';
-import Typed from 'typewriter-effect';
+import Typed, { TypewriterClass } from 'typewriter-effect';
+import axios from '../../axios';
 import useInput from '../../hooks/useInput';
 
-const typerConfig = { loop: true, backSpeed: 15, typeSpeed: 25 };
-const OnInit = (typewriter: any) => typewriter.typeString('Please Enter your query.').pauseFor(2000).deleteAll().typeString('Dr Alok will reply shortly.').pauseFor(2000).start();
-const AlertSucessText = 'Message Sent ';
-const AlertFailureText = 'Failed to send message';
-const emailPlaceholder = 'Enter your email';
-const queryPlaceholder = 'Enter your query';
+const typerConfig = { loop: true, deleteSpeed: 25 };
+const OnInit = (typewriter: TypewriterClass) => typewriter.typeString('Please Enter your query.').pauseFor(2000).deleteAll().typeString('Dr Alok will reply shortly.').pauseFor(2000).start();
 interface Props {
 	modal: boolean;
-	toggle: () => void;
+	toggle: () => any;
 }
-export default function Form(props: Props) {
+const Form: React.FC<Props> = ({ modal, toggle }) => {
 	const [Success, setSuccess] = useState(false);
 	const [Failure, setFailure] = useState(false);
 	const [email, emailBind, emailReset] = useInput('');
-	const queryRef = useRef<HTMLTextAreaElement>(null);
+	const [query, setQuery] = useState('');
 	const [loading, setLoading] = useState(false);
-	const onSubmit = (e: React.FormEvent) => {
+	const reset = () => {
+		emailReset();
+		setQuery('');
+	};
+	const onCloseClick = () => {
+		toggle();
+		reset();
+		setFailure(false);
+		setSuccess(false);
+	};
+	const onSubmit = async (e: FormEvent) => {
 		setLoading(true);
 		e.preventDefault();
 		setSuccess(false);
 		setFailure(false);
-		const options = { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ query: queryRef?.current?.value, email }) };
-		fetch(`${process.env.REACT_APP_SERVER_URL}/api/query/`, options)
-			.then(res => {
-				if (!res.ok) return setFailure(true);
+		try {
+			const res = await axios.post('/api/query/public/', { query, email });
+			if (res.status !== 201) setFailure(true);
+			else {
 				setSuccess(true);
-				emailReset();
-				if (queryRef.current != null) queryRef.current.value = '';
-			})
-			.catch(() => setFailure(true))
-			.finally(() => setLoading(false));
-	};
-	const reset = () => {
-		emailReset();
-		if (queryRef.current != null) queryRef.current.value = '';
-	};
-	const onCloseClick = () => {
-		props.toggle();
-		reset();
-		setFailure(false);
-		setSuccess(false);
+				reset();
+			}
+		} catch (error) {
+			setFailure(true);
+			console.log(error);
+		} finally {
+			setLoading(false);
+		}
 	};
 	const close = (
 		<Button color='danger' onClick={onCloseClick}>
@@ -53,16 +53,16 @@ export default function Form(props: Props) {
 		</Button>
 	);
 	return (
-		<Modal className='modal-scrollable' isOpen={props.modal} toggle={props.toggle}>
-			<ModalHeader className='bg-dark text-light' toggle={props.toggle} close={close}>
+		<Modal className='modal-scrollable' isOpen={modal} toggle={toggle}>
+			<ModalHeader className='bg-dark text-light' toggle={toggle} close={close}>
 				<b>
-					<Typed options={typerConfig} onInit={typeWriter => OnInit(typeWriter)} />
+					<Typed options={typerConfig} onInit={OnInit} />
 				</b>
 			</ModalHeader>
 			<ModalBody className='bg-dark text-light'>
 				<Alert color='success' isOpen={Success}>
 					<div className='d-flex justify-content-between'>
-						<span className='alert-text'>{AlertSucessText}</span>
+						<span className='alert-text'>Message Sent</span>
 						<Button color='dark' className='close btn-sm' data-dismiss='alert' aria-label='Close' onClick={() => setSuccess(false)}>
 							<span aria-hidden='true'>X</span>
 						</Button>
@@ -70,14 +70,14 @@ export default function Form(props: Props) {
 				</Alert>
 				<Alert color='danger' isOpen={Failure}>
 					<div className='d-flex justify-content-between'>
-						<span className='alert-text'>{AlertFailureText}</span>
+						<span className='alert-text'>Failed to send message</span>
 						<button className='close btn btn-sm btn-danger' data-dismiss='alert' aria-label='Close' onClick={() => setFailure(false)}>
 							<span aria-hidden='true'>X</span>
 						</button>
 					</div>
 				</Alert>
-				<input type='email' placeholder={emailPlaceholder} {...emailBind} className='form-control my-3 text-dark' required />
-				<textarea rows={4} placeholder={queryPlaceholder} ref={queryRef} className='form-control my-4' required />
+				<input type='email' placeholder='Enter your email' {...emailBind} className='form-control my-3 text-dark' required />
+				<textarea rows={4} placeholder='Enter your query' value={query} onChange={e => setQuery(e.target.value)} className='form-control my-4' required />
 			</ModalBody>
 			<ModalFooter className='bg-dark text-light d-flex justify-content-around'>
 				{loading && <Spinner />}
@@ -95,4 +95,5 @@ export default function Form(props: Props) {
 			</ModalFooter>
 		</Modal>
 	);
-}
+};
+export default Form;

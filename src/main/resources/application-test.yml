@@ -8,8 +8,6 @@ spring.datasource:
   password: 123456
   username: postgres
 alokmeds.security:
-  pepper: dbrtgfv&uetgbehyvn$c$#%^%)wiuhvyerbv%c%ruywrgv&%$yrbvcnwe8vh#$7w7ucnwijfw8(%^&ychv7
-  rounds: 15
   jwtSecret: 8391374#$23eundjc#*#E*&jidHJBDCBU^&YEHB@$rUSHX#%^NUEDYG@#*#$tgver
 spring.mail:
   username:

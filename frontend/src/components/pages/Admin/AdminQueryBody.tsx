@@ -1,41 +1,37 @@
 /** @format */
 
 import React, { useEffect, useState } from 'react';
-import AdminItem, { AdminItemProps } from './Item';
-import { Data as Type } from './Types';
+import axios from '../../../axios';
+import PageHandler from '../../../hooks/PageHandler';
+import Query from '../../../Types/Query';
+import AdminItem from './Item';
 interface Props {
 	SortBy: string;
-	Checked: string;
+	Checked: boolean;
 	Offset: number;
 	setLoading: React.Dispatch<React.SetStateAction<boolean>>;
-	setIsLast: React.Dispatch<React.SetStateAction<boolean>>;
 	page: number;
+	setIsLast: React.Dispatch<React.SetStateAction<boolean>>;
 }
-const AdminQueryBody: React.FC<Props> = ({ SortBy, Checked, Offset, setLoading, page, setIsLast }) => {
-	const [Data, setData] = useState<Type>();
+interface Data {
+	content: Query[];
+	last: boolean;
+}
+const AdminQueryBody: React.FC<Props> = ({ SortBy, Checked, setLoading, page }) => {
+	const [Data, setData] = useState({} as Data);
+	const [Offset, setOffset] = useState(0);
 	useEffect(() => {
-		let isMounted = true;
 		setLoading(true);
-		fetch(`${process.env.REACT_APP_SERVER_URL}/api/auth/admin/query?SortBy=${SortBy}&SortBy=${Checked}&offset=${Offset}&size=${page}`, {})
+		axios
+			.get(`/api/query/?SortBy=${SortBy}&SortBy=${Checked}&offset=${Offset}&size=${page}`)
 			.then(res => {
-				if (isMounted) return res.json();
-			})
-			.then(parsedData => {
-				if (!isMounted) return;
-				setIsLast(parsedData.last);
-				setData(parsedData);
-			})
-			.catch(err => {
-				console.log(err.message);
+				setData(res.data);
 			})
 			.finally(() => setLoading(false));
-		return () => {
-			isMounted = false;
-		};
-	}, [Checked, Offset, SortBy, page, setIsLast, setLoading]);
+	}, [Checked, Offset, SortBy, page, setLoading]);
 	return (
 		<>
-			{JSON.stringify(Data?.content) === JSON.stringify([]) && (
+			{JSON.stringify(Data.content || []) === JSON.stringify([]) && (
 				<span className='text-center'>
 					<h3>
 						<b className='goog-font'>No questions for you</b>
@@ -43,7 +39,7 @@ const AdminQueryBody: React.FC<Props> = ({ SortBy, Checked, Offset, setLoading, 
 				</span>
 			)}
 			<div className='row'>
-				{Data?.content.map((item: AdminItemProps) => {
+				{Data?.content?.map(item => {
 					return (
 						<div key={item.id} className='col-md-4'>
 							<AdminItem {...item} />
@@ -51,6 +47,7 @@ const AdminQueryBody: React.FC<Props> = ({ SortBy, Checked, Offset, setLoading, 
 					);
 				})}
 			</div>
+			<PageHandler setOffset={setOffset} last={Data?.last} />
 		</>
 	);
 };

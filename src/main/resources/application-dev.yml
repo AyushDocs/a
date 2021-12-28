@@ -1,18 +1,27 @@
 # @format
 
 spring.jpa:
-  show-sql: false
+  show-sql: true
 spring.jpa.hibernate.ddl-auto: create-drop
 spring.datasource:
   url: jdbc:postgresql://localhost:5433/postgres
   password: 123456
   username: postgres
+spring:
+  jpa:
+    show-sql: false
 alokmeds.security:
-  pepper: fvgjbnejnveiovneibvnfjubnvionroi
-  rounds: 10
-  cookieLife: 900000
+  cookieLife: 600
+  # cookieLife: 60*10
   cookieName: token
   jwtSecret: ayush
 spring.mail:
   username:
   password:
+# logging:
+#   level:
+#     org.springframework: ERROR
+#   pattern:
+#     console: '%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n'
+#   file:
+#     name: app.log

@@ -1,22 +1,25 @@
 /** @format */
 
 import React from 'react';
+import useIsAuthenticated from '../../../../Authentication/useAuthenticated';
+import axios from '../../../../axios';
+import ReactImage from '../../../Image';
 import { papaimg } from '../../Home';
-export interface Props {
+interface Props {
 	name: string;
 	imgUrl: string;
 	link: string;
 }
-const PublicationItem = (props: React.PropsWithChildren<Props>) => {
+const PublicationItem: React.FC<Props> = props => {
 	const { name, imgUrl, link } = props;
-	const addUserPublications: React.ReactEventHandler<HTMLAnchorElement> = async e => {
-		const options: RequestInit = { method: 'POST', credentials: 'include' };
-		await fetch(`${process.env.REACT_APP_SERVER_URL}/api/auth/user/users/${link}`, options);
+	const auth = useIsAuthenticated();
+	const addUserPublications = async () => {
+		if (auth) await axios.post(`/api/addUserPubblication/${link}`);
 	};
 	return (
 		<div className='card my-2'>
-			<img src={papaimg} className='card-img-top' height='200' alt='' />
-			{/* <img src={imgUrl} className='card-img-top' alt='' /> */}
+			<ReactImage src={papaimg} className='card-img-top' height='200' alt='' />
+			{/* <ReactImage src={imgUrl} className='card-img-top' alt='' /> */}
 			<div className='card-body'>
 				<h3 className=' card-title'>{name}</h3>
 				<a onClick={addUserPublications} href={link} target='_blank' rel='noreferrer' className='btn btn-primary btn-sm'>

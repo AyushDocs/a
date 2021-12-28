@@ -24,7 +24,7 @@ import lombok.AllArgsConstructor;
 public class PublicationPage {
     PublicationRepo repository;
 
-    @GetMapping("/publications")
+    @GetMapping("/publications/public/")
     public ResponseEntity<Page<PublicationPageItem>> findAll(Optional<Integer> offset, Optional<Integer> page,
             Optional<String> sort) {
         try {

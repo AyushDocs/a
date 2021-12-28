@@ -1,36 +1,37 @@
 /** @format */
 
-import React, { ChangeEvent, useState } from 'react';
+import axios from 'axios';
+import React, { ChangeEvent, FormEvent, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { useAppDispatch } from '../../../../redux/reducerHooks';
 import { setAll } from '../../../../redux/slices/AlertSlice';
-interface DataType {
-	name: string;
-	description: string;
-	imgUrl: string;
-	author: string;
-	link: string;
-}
-const initialState: DataType = {
+import Publication from '../../../../Types/Publication';
+const initialState: Publication = {
+	id: 0,
 	name: '',
-	imgUrl: '',
-	description: '',
 	author: '',
 	link: '',
+	description: '',
+	imgUrl: '',
+	createdDateTime: new Date(1),
 };
-const CreatePublications: React.FC = () => {
-	const [Data, setData] = useState<DataType>(initialState);
+const CreatePublications = () => {
+	const [Data, setData] = useState<Publication>(initialState);
 	const dispatch = useAppDispatch();
 	const handleChange = (e: ChangeEvent<HTMLInputElement>) => setData({ ...Data, [e.target.name]: e.target.value });
 	const navigate = useNavigate();
-	const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+	const handleSubmit = async (e: FormEvent) => {
 		e.preventDefault();
-		const body = JSON.stringify(Data);
-		const options = { body, method: 'POST', headers: { 'Content-Type': 'application/json' } };
-		const res = await fetch(`${process.env.REACT_APP_SERVER_URL}/api/auth/admin/publications/`, options);
-		if (!res.ok) return dispatch(setAll({ color: 'danger', message: 'Failed to save publication' }));
-		dispatch(setAll({ color: 'success', message: 'Saved publication successfully' }));
-		navigate(-1);
+		try {
+			const res = await axios.post('/api/publications/', Data);
+			if (res.status !== 200) return dispatch(setAll({ color: 'danger', message: 'Failed to save publication' }));
+			dispatch(setAll({ color: 'success', message: 'Saved publication successfully' }));
+			setData(res.data);
+			navigate(-1);
+		} catch (error) {
+			console.log(error);
+			dispatch(setAll({ color: 'danger', message: 'Failed to save publication' }));
+		}
 	};
 	return (
 		<form className='container my-3' onSubmit={handleSubmit}>

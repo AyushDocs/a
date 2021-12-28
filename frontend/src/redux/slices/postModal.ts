@@ -1,9 +1,9 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { RootState } from '../store';
-interface PostModalState{
+interface state{
   value:boolean
 }
-const initialState:PostModalState ={
+const initialState:state ={
   value: false
 }
 
@@ -16,5 +16,5 @@ const postModalSlice = createSlice({
 })
 
 export const { toggle } = postModalSlice.actions
-export const selectCount = (state: RootState) => state.postModal.value
+export const selectCount = (state:RootState) => state.postModal.value
 export default postModalSlice.reducer

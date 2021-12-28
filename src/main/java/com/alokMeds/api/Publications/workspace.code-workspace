@@ -1,0 +1,16 @@
+{
+	"folders": [
+		{
+			"name": "alokmeds-with-spring-security",
+			"path": "..\\..\\..\\..\\..\\..\\.."
+		},
+		{
+			"name": "frontend",
+			"path": "..\\..\\..\\..\\..\\..\\..\\frontend"
+		}
+	],
+	"settings": {
+		"java.configuration.updateBuildConfiguration": "automatic",
+		"liveServer.settings.multiRootWorkspaceName": "alokmeds-with-spring-security"
+	}
+}
